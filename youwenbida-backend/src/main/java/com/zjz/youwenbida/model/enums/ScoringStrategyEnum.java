@@ -1,30 +1,25 @@
 package com.zjz.youwenbida.model.enums;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.ObjectUtils;
 
 /**
- * 文件上传业务类型枚举
+ * App 评分策略枚举
  *
  */
-public enum FileUploadBizEnum {
+public enum ScoringStrategyEnum {
 
-    USER_AVATAR("用户头像", "user_avatar"),
-
-    RESULT_PICTURE("评分结果图片", "result_picture"),
-
-    APP_ICON("应用图标", "app_icon");
-
-
-
+    CUSTOMIZE("自定义",0),
+    AI("人工智能",1);
 
     private final String text;
 
-    private final String value;
+    private final Integer value;
 
-    FileUploadBizEnum(String text, String value) {
+    ScoringStrategyEnum(String text, Integer value) {
         this.text = text;
         this.value = value;
     }
@@ -34,7 +29,7 @@ public enum FileUploadBizEnum {
      *
      * @return
      */
-    public static List<String> getValues() {
+    public static List<Integer> getValues() {
         return Arrays.stream(values()).map(item -> item.value).collect(Collectors.toList());
     }
 
@@ -44,11 +39,11 @@ public enum FileUploadBizEnum {
      * @param value
      * @return
      */
-    public static FileUploadBizEnum getEnumByValue(String value) {
+    public static ScoringStrategyEnum getEnumByValue(Integer value) {
         if (ObjectUtils.isEmpty(value)) {
             return null;
         }
-        for (FileUploadBizEnum anEnum : FileUploadBizEnum.values()) {
+        for (ScoringStrategyEnum anEnum : ScoringStrategyEnum.values()) {
             if (anEnum.value.equals(value)) {
                 return anEnum;
             }
@@ -56,7 +51,7 @@ public enum FileUploadBizEnum {
         return null;
     }
 
-    public String getValue() {
+    public Integer getValue() {
         return value;
     }
 

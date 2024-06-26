@@ -1,30 +1,26 @@
 package com.zjz.youwenbida.model.enums;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.ObjectUtils;
 
 /**
- * 文件上传业务类型枚举
+ * App 审核状态枚举
  *
  */
-public enum FileUploadBizEnum {
+public enum ReviewStatusEnum {
 
-    USER_AVATAR("用户头像", "user_avatar"),
-
-    RESULT_PICTURE("评分结果图片", "result_picture"),
-
-    APP_ICON("应用图标", "app_icon");
-
-
-
+    WAIT("待审核",0),
+    PASS("通过",1),
+    REFUSE("拒绝",2);
 
     private final String text;
 
-    private final String value;
+    private final Integer value;
 
-    FileUploadBizEnum(String text, String value) {
+    ReviewStatusEnum(String text, Integer value) {
         this.text = text;
         this.value = value;
     }
@@ -34,7 +30,7 @@ public enum FileUploadBizEnum {
      *
      * @return
      */
-    public static List<String> getValues() {
+    public static List<Integer> getValues() {
         return Arrays.stream(values()).map(item -> item.value).collect(Collectors.toList());
     }
 
@@ -44,11 +40,11 @@ public enum FileUploadBizEnum {
      * @param value
      * @return
      */
-    public static FileUploadBizEnum getEnumByValue(String value) {
+    public static ReviewStatusEnum getEnumByValue(Integer value) {
         if (ObjectUtils.isEmpty(value)) {
             return null;
         }
-        for (FileUploadBizEnum anEnum : FileUploadBizEnum.values()) {
+        for (ReviewStatusEnum anEnum : ReviewStatusEnum.values()) {
             if (anEnum.value.equals(value)) {
                 return anEnum;
             }
@@ -56,7 +52,7 @@ public enum FileUploadBizEnum {
         return null;
     }
 
-    public String getValue() {
+    public Integer getValue() {
         return value;
     }
 

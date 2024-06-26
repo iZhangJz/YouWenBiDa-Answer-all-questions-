@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.zjz.youwenbida.constant.FileConstant.FILE_SIZE_ONE_M;
+
 /**
  * 文件接口
  *
@@ -47,7 +49,8 @@ public class FileController {
      * @return
      */
     @PostMapping("/upload")
-    public BaseResponse<String> uploadFile(@RequestPart("file") MultipartFile multipartFile,
+    public BaseResponse<String> uploadFile(
+            @RequestPart("file") MultipartFile multipartFile,
             UploadFileRequest uploadFileRequest, HttpServletRequest request) {
         String biz = uploadFileRequest.getBiz();
         FileUploadBizEnum fileUploadBizEnum = FileUploadBizEnum.getEnumByValue(biz);
@@ -93,14 +96,14 @@ public class FileController {
         long fileSize = multipartFile.getSize();
         // 文件后缀
         String fileSuffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
-        final long ONE_M = 1024 * 1024L;
         if (FileUploadBizEnum.USER_AVATAR.equals(fileUploadBizEnum)) {
-            if (fileSize > ONE_M) {
+            if (fileSize > FILE_SIZE_ONE_M) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件大小不能超过 1M");
             }
             if (!Arrays.asList("jpeg", "jpg", "svg", "png", "webp").contains(fileSuffix)) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件类型错误");
             }
         }
+        // TODO 添加各种业务的图片校验规则
     }
 }

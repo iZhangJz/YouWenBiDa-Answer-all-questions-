@@ -1,7 +1,5 @@
 package com.zjz.youwenbida.service.impl;
 
-import static com.zjz.youwenbida.constant.UserConstant.USER_LOGIN_STATE;
-
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,15 +14,18 @@ import com.zjz.youwenbida.model.vo.LoginUserVO;
 import com.zjz.youwenbida.model.vo.UserVO;
 import com.zjz.youwenbida.service.UserService;
 import com.zjz.youwenbida.utils.SqlUtils;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.zjz.youwenbida.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户服务实现
