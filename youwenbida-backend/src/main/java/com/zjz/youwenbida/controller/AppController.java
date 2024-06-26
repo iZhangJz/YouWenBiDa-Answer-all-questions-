@@ -2,10 +2,7 @@ package com.zjz.youwenbida.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zjz.youwenbida.annotation.AuthCheck;
-import com.zjz.youwenbida.common.BaseResponse;
-import com.zjz.youwenbida.common.DeleteRequest;
-import com.zjz.youwenbida.common.ErrorCode;
-import com.zjz.youwenbida.common.ResultUtils;
+import com.zjz.youwenbida.common.*;
 import com.zjz.youwenbida.constant.UserConstant;
 import com.zjz.youwenbida.exception.BusinessException;
 import com.zjz.youwenbida.exception.ThrowUtils;
@@ -15,6 +12,7 @@ import com.zjz.youwenbida.model.dto.app.AppQueryRequest;
 import com.zjz.youwenbida.model.dto.app.AppUpdateRequest;
 import com.zjz.youwenbida.model.entity.App;
 import com.zjz.youwenbida.model.entity.User;
+import com.zjz.youwenbida.model.enums.ReviewStatusEnum;
 import com.zjz.youwenbida.model.vo.AppVO;
 import com.zjz.youwenbida.service.AppService;
 import com.zjz.youwenbida.service.UserService;
@@ -24,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
  * 应用接口
@@ -228,4 +227,40 @@ public class AppController {
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
+
+    /**
+     * 审核应用 - 管理员使用
+     * @param reviewRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/review")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+   public BaseResponse<Boolean> doAppReview(@RequestBody ReviewRequest reviewRequest,HttpServletRequest request){
+        ThrowUtils.throwIf(reviewRequest == null, ErrorCode.PARAMS_ERROR);
+        Long id = reviewRequest.getId();
+        Integer reviewStatus = reviewRequest.getReviewStatus();
+        // 校验审核状态是否非法
+        ReviewStatusEnum reviewStatusEnum = ReviewStatusEnum.getEnumByValue(reviewStatus);
+        if (id == null || reviewStatusEnum == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 判断被审核应用是否存在
+        App oldApp = appService.getById(id);
+        ThrowUtils.throwIf(oldApp == null, ErrorCode.NOT_FOUND_ERROR);
+        // 判断被审核应用的状态是否已经是该状态
+        if (oldApp.getReviewStatus().equals(reviewStatus)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请勿重复审核");
+        }
+        // 更新审核状态
+        User loginUser = userService.getLoginUser(request);
+        App app = new App();
+        app.setId(id);
+        app.setReviewStatus(reviewStatus);
+        app.setReviewerId(loginUser.getId());
+        app.setReviewTime(new Date());
+        boolean result = appService.updateById(app);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+   }
 }

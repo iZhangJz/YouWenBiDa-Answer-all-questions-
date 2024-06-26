@@ -30,7 +30,7 @@ public class AuthInterceptor {
 
     /**
      * 执行拦截
-     *
+     * 在遇到标记了@AuthCheck注解的方法时执行该方法
      * @param joinPoint
      * @param authCheck
      * @return
