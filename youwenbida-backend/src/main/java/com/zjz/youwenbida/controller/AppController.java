@@ -162,6 +162,8 @@ public class AppController {
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<AppVO>> listAppVOByPage(@RequestBody AppQueryRequest appQueryRequest,
                                                      HttpServletRequest request) {
+        // 用户只能查看已经过审的应用
+        appQueryRequest.setReviewStatus(ReviewStatusEnum.PASS.getValue());
         return getAppVOPageResponse(appQueryRequest, request);
     }
 

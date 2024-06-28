@@ -18,8 +18,10 @@ import com.zjz.youwenbida.model.dto.userAnswer.UserAnswerUpdateRequest;
 import com.zjz.youwenbida.model.entity.App;
 import com.zjz.youwenbida.model.entity.UserAnswer;
 import com.zjz.youwenbida.model.entity.User;
+import com.zjz.youwenbida.model.enums.ReviewStatusEnum;
 import com.zjz.youwenbida.model.vo.AppVO;
 import com.zjz.youwenbida.model.vo.UserAnswerVO;
+import com.zjz.youwenbida.scoring.ScoringStrategyExecutor;
 import com.zjz.youwenbida.service.AppService;
 import com.zjz.youwenbida.service.UserAnswerService;
 import com.zjz.youwenbida.service.UserService;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * 用户答题表接口
@@ -47,6 +50,9 @@ public class UserAnswerController {
 
     @Resource
     private AppService appService;
+
+    @Resource
+    private ScoringStrategyExecutor scoringStrategyExecutor;
 
     // region 增删改查
 
@@ -67,16 +73,32 @@ public class UserAnswerController {
         userAnswer.setChoices(choices);
         // 数据校验
         userAnswerService.validUserAnswer(userAnswer, true);
+        // 应用检查
+        Long appId = userAnswerAddRequest.getAppId();
+        App app = appService.getById(appId);
+        ThrowUtils.throwIf(app == null,ErrorCode.NOT_FOUND_ERROR,"请求错误，未知应用");
+        // 检查应用审核是否通过
+        if (!Objects.equals(ReviewStatusEnum.getEnumByValue(app.getReviewStatus()), ReviewStatusEnum.PASS)){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR,"应用审核未通过，无法答题");
+        }
+
         User loginUser = userService.getLoginUser(request);
         userAnswer.setUserId(loginUser.getId());
-        Long appId = userAnswerAddRequest.getAppId();
-        userAnswer.setAppType(appService.getById(appId).getAppType());
-        userAnswer.setScoringStrategy(appService.getById(appId).getScoringStrategy());
+        userAnswer.setAppType(app.getAppType());
+        userAnswer.setScoringStrategy(app.getScoringStrategy());
         // 写入数据库
         boolean result = userAnswerService.save(userAnswer);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR,"系统错误");
         // 返回新写入的数据 id
         long newUserAnswerId = userAnswer.getId();
+
+        // 计算评分结果
+        UserAnswer userAnswerWithResult = scoringStrategyExecutor.doDispatch(userAnswerAddRequest.getChoices(), app);
+        // 设置 id
+        userAnswerWithResult.setId(newUserAnswerId);
+        boolean success = userAnswerService.updateById(userAnswerWithResult);
+        ThrowUtils.throwIf(!success, ErrorCode.OPERATION_ERROR,"系统错误");
+
         return ResultUtils.success(newUserAnswerId);
     }
 
