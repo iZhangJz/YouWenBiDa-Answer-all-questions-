@@ -1,8 +1,14 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
+    {{ JSON.stringify(loginUserStore.loginUser) }}
   </div>
   <div>Hello</div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useLoginUserStore } from "@/store/UserStore";
+
+// 首次进入首页时获取用户信息
+const loginUserStore = useLoginUserStore();
+loginUserStore.fetchLoginUser();
+</script>
