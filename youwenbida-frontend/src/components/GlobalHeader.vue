@@ -43,8 +43,9 @@
 <script setup lang="ts">
 import { routes } from "@/router/routes";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useLoginUserStore } from "@/store/UserStore";
+import checkAccess from "@/access/checkAccess";
 
 const loginUserStore = useLoginUserStore();
 
@@ -61,11 +62,13 @@ router.afterEach((to) => {
 });
 
 // 过滤掉meta中hideInMenu为true的
-const visibleRoutes = routes.filter((item) => {
-  if (item.meta?.hideInMenu === true) {
-    return false;
-  }
-  return true;
+const visibleRoutes = computed(() => {
+  return routes.filter((item) => {
+    if (item.meta?.hideInMenu === true) {
+      return false;
+    }
+    return checkAccess(loginUserStore.loginUser, item.meta?.access as string);
+  });
 });
 </script>
 

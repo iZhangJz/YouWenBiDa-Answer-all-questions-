@@ -12,5 +12,22 @@
 <script setup lang="ts">
 import BasicLayout from "@/layouts/BasicLayout.vue";
 import { useRoute } from "vue-router";
+import { useLoginUserStore } from "@/store/UserStore";
+import { onMounted } from "vue";
 const route = useRoute();
+
+/**
+ * 全局初始化函数，有全局单次调用的代码，都可以写到这里
+ */
+const doInit = () => {
+  console.log("hello 欢迎来到我的项目");
+};
+
+onMounted(() => {
+  doInit();
+});
+
+// 首次进入首页时尝试获取用户信息
+const loginUserStore = useLoginUserStore();
+loginUserStore.fetchLoginUser();
 </script>
