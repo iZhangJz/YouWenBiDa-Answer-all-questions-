@@ -14,14 +14,8 @@ export const useLoginUserStore = defineStore("loginUser", () => {
     if (res.data.code === 0 && res.data.data) {
       loginUser.value = res.data.data;
     } else {
-      setTimeout(() => {
-        loginUser.value = {
-          userName: "测试一号",
-          id: 1,
-          userRole: ACCESS_ROLE_ENUM.ADMIN,
-        };
-      });
       // 没有获取到用户,设置用户状态为未登录
+      loginUser.value = { userRole: ACCESS_ROLE_ENUM.NOT_LOGIN };
     }
   }
 

@@ -12,7 +12,6 @@
 <script setup lang="ts">
 import BasicLayout from "@/layouts/BasicLayout.vue";
 import { useRoute } from "vue-router";
-import { useLoginUserStore } from "@/store/UserStore";
 import { onMounted } from "vue";
 const route = useRoute();
 
@@ -26,8 +25,4 @@ const doInit = () => {
 onMounted(() => {
   doInit();
 });
-
-// 首次进入首页时尝试获取用户信息
-const loginUserStore = useLoginUserStore();
-loginUserStore.fetchLoginUser();
 </script>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Message } from "@arco-design/web-vue";
 
 const myAxios = axios.create({
   baseURL: "http://localhost:8101",
@@ -29,7 +30,7 @@ myAxios.interceptors.response.use(
         !response.request.responseURL.includes("user/get/login") &&
         !window.location.pathname.includes("user/login")
       ) {
-        window.location.href = `user/login?redirect=${window.location.href}`;
+        window.location.href = `user/login`;
       }
     }
     return response;

@@ -6,15 +6,21 @@ import checkAccess from "@/access/checkAccess";
 /**
  * 路由权限控制
  */
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // 获取当前用户
   const userStore = useLoginUserStore();
-  const user = userStore.loginUser;
+  let user = userStore.loginUser;
   const needAccess = (to.meta?.access as string) ?? ACCESS_ROLE_ENUM.NOT_LOGIN;
-  console.log(needAccess);
+
+  // 尝试自动登录
+  if (!user || user.userName === "未登录") {
+    await userStore.fetchLoginUser();
+    user = userStore.loginUser;
+  }
   if (needAccess == ACCESS_ROLE_ENUM.NOT_LOGIN) {
     // 无论用户是否登录，都允许访问
     next();
+    return;
   }
   // 如果用户未登录，则跳转到登录页面
   if ((!user || user.userName === "未登录") && to.path !== "/user/login") {

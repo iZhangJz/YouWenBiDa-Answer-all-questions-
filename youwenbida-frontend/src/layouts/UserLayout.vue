@@ -1,6 +1,6 @@
 <template>
   <div id="userLayout">
-    <a-layout style="height: 100vh">
+    <a-layout style="height: 100vh; display: flex; justify-content: center">
       <a-layout-header class="header">
         <a-space>
           <img src="../assets/logo.png" class="logo" />
@@ -45,6 +45,7 @@
 }
 
 .content {
+  margin-top: 88px;
   margin-bottom: 28px;
   padding: 24px;
 }
