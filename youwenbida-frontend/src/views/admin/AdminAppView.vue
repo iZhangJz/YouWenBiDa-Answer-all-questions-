@@ -59,10 +59,10 @@
       {{ formatDate(record.reviewTime) }}
     </template>
     <template #appIcon="{ record }">
-      <a-image :size="40" :src="record.appIcon" />
+      <a-image :width="58" :src="record.appIcon" />
     </template>
     <template #otherOptional="{ record }">
-      <a-space>
+      <a-space size="mini">
         <a-button type="primary" @click="doUpdate(record)" size="mini">
           修改
         </a-button>
@@ -269,6 +269,7 @@ const columns = [
     dataIndex: "appDesc",
     ellipsis: true,
     tooltip: true,
+    width: 88,
   },
   {
     title: "应用类型",
@@ -286,7 +287,8 @@ const columns = [
     title: "图标",
     dataIndex: "appIcon",
     slotName: "appIcon",
-    width: 64,
+    align: "center",
+    width: 88,
   },
   {
     title: "创建时间",
@@ -335,6 +337,7 @@ const columns = [
     title: "审核操作",
     slotName: "reviewOptional",
     align: "center",
+    width: 88,
   },
   {
     title: "其他操作",

@@ -69,10 +69,9 @@ const handleSubmit = async () => {
   const res = await userRegisterUsingPost(form);
   // 注册成功
   if (res.data.code === 0) {
-    await loginUserStore.fetchLoginUser();
     message.success("注册成功");
     router.push({
-      path: "/",
+      path: "/user/login",
       replace: true,
     });
   } else {
