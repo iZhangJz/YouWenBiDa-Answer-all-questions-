@@ -9,6 +9,8 @@ import AdminQuestionView from "@/views/admin/AdminQuestionView.vue";
 import AdminScoringResultView from "@/views/admin/AdminScoringResultView.vue";
 import AdminAnswerView from "@/views/admin/AdminAnswerView.vue";
 import AdminAppView from "@/views/admin/AdminAppView.vue";
+import App from "@/App.vue";
+import AppDetailView from "@/views/app/AppDetailView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -84,5 +86,14 @@ export const routes: Array<RouteRecordRaw> = [
         component: UserRegisterView,
       },
     ],
+  },
+  {
+    path: "/app/detail/:id",
+    name: "应用详情",
+    props: true,
+    component: AppDetailView,
+    meta: {
+      hideInMenu: true,
+    },
   },
 ];

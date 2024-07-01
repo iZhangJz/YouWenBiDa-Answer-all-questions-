@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div id="homeView">
     <div class="search">
       <a-input-search
         :style="{ width: '320px' }"
