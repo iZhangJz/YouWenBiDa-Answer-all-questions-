@@ -51,8 +51,12 @@
     </template>
     <template #optional="{ record }">
       <a-space>
-        <a-button type="primary" @click="doUpdate(record)">修改</a-button>
-        <a-button status="danger" @click="doDelete(record)">删除</a-button>
+        <a-button size="mini" type="primary" @click="doUpdate(record)"
+          >修改</a-button
+        >
+        <a-button size="mini" status="danger" @click="doDelete(record)"
+          >删除</a-button
+        >
       </a-space>
     </template>
   </a-table>
@@ -190,6 +194,7 @@ const columns = [
     title: "Id",
     dataIndex: "id",
     width: 58,
+    align: "center",
   },
   {
     title: "用户答案",
@@ -201,6 +206,9 @@ const columns = [
     title: "所属应用",
     dataIndex: "appId",
     align: "center",
+    width: 100,
+    ellipsis: true,
+    tooltip: true,
   },
   {
     title: "对应结果",
@@ -210,6 +218,7 @@ const columns = [
   {
     title: "所属用户",
     dataIndex: "userId",
+    align: "center",
   },
   {
     title: "创建时间",
@@ -224,6 +233,8 @@ const columns = [
   {
     title: "操作",
     slotName: "optional",
+    width: 120,
+    align: "center",
   },
 ];
 </script>

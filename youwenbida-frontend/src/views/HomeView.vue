@@ -75,17 +75,6 @@ const loadData = async () => {
   }
 };
 
-// const initData = async () => {
-//   const res = await listAppByPageUsingPost(initSearchParams);
-//   const data = res.data;
-//   if (data.code === 0) {
-//     dataList.value = data.data?.records || [];
-//     total.value = data.data?.total || 0;
-//   } else {
-//     message.error("获取应用数据失败," + data.message);
-//   }
-// };
-
 /**
  * 监听 searchParams 变化，重新加载数据
  */

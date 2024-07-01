@@ -256,6 +256,8 @@ const columns = [
   {
     title: "Id",
     dataIndex: "id",
+    ellipsis: true,
+    tooltip: true,
     width: 58,
   },
   {
@@ -263,6 +265,7 @@ const columns = [
     dataIndex: "appName",
     ellipsis: true,
     tooltip: true,
+    width: 88,
   },
   {
     title: "应用描述",
@@ -337,12 +340,13 @@ const columns = [
     title: "审核操作",
     slotName: "reviewOptional",
     align: "center",
-    width: 88,
+    width: 120,
   },
   {
     title: "其他操作",
     slotName: "otherOptional",
     align: "center",
+    width: 120,
   },
 ] as const;
 </script>

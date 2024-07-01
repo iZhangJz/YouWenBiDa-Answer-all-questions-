@@ -33,3 +33,9 @@ export const SCORING_STRATEGY_ENUM: { [key: string]: number } = {
   CUSTOMIZE: 0,
   AI: 1,
 };
+
+export const FILE_UPLOAD_BIZ_ENUM: { [key: string]: string } = {
+  USER_AVATAR: "user_avatar",
+  RESULT_PICTURE: "result_picture",
+  APP_ICON: "app_icon",
+};

@@ -11,6 +11,9 @@ import AdminAnswerView from "@/views/admin/AdminAnswerView.vue";
 import AdminAppView from "@/views/admin/AdminAppView.vue";
 import App from "@/App.vue";
 import AppDetailView from "@/views/app/AppDetailView.vue";
+import AddScoringResultView from "@/views/app/AddScoringResultView.vue";
+import AddQuestionView from "@/views/app/AddQuestionView.vue";
+import AddAppView from "@/views/app/AddAppView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -76,12 +79,12 @@ export const routes: Array<RouteRecordRaw> = [
     component: UserLayout,
     children: [
       {
-        path: "login",
+        path: "/user/login",
         name: "用户登录",
         component: UserLoginView,
       },
       {
-        path: "register",
+        path: "/user/register",
         name: "用户注册",
         component: UserRegisterView,
       },
@@ -92,6 +95,38 @@ export const routes: Array<RouteRecordRaw> = [
     name: "应用详情",
     props: true,
     component: AppDetailView,
+    meta: {
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "/add/app",
+    name: "应用创建",
+    component: AddAppView,
+  },
+  {
+    path: "/edit/app/:appId",
+    name: "应用修改",
+    component: AddAppView,
+    props: true,
+    meta: {
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "/add/question/:appId",
+    name: "题目创建",
+    component: AddQuestionView,
+    props: true,
+    meta: {
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "/add/scoringResult/:appId",
+    name: "评分策略创建",
+    component: AddScoringResultView,
+    props: true,
     meta: {
       hideInMenu: true,
     },

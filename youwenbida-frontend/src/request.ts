@@ -27,10 +27,10 @@ myAxios.interceptors.response.use(
 
     if (data.code == 40100) {
       if (
-        !response.request.responseURL.includes("user/get/login") &&
-        !window.location.pathname.includes("user/login")
+        !response.request.responseURL.includes("/user/get/login") &&
+        !window.location.pathname.includes("/user/login")
       ) {
-        window.location.href = `user/login`;
+        window.location.href = `/user/login`;
       }
     }
     return response;

@@ -1,6 +1,6 @@
 <template>
   <div id="AppDetailView">
-    <a-card class="detail" :style="{ width: '880px' }">
+    <a-card class="detail" :style="{ width: '1080px' }">
       <a-row class="grid-demo" style="margin-bottom: 16px">
         <a-col flex="auto" class="content">
           <h2>{{ appData.appName }}</h2>
@@ -19,13 +19,22 @@
             }}</a-typography-text>
           </p>
           <p style="margin-top: 64px">
-            <a-space>
+            <a-space class="button">
               <a-button type="primary">开始答题</a-button>
               <a-button>分享应用</a-button>
+              <a-button v-if="isMine" :href="`/add/question/${appData.id}`"
+                >修改题目</a-button
+              >
+              <a-button v-if="isMine" :href="`/add/scoringResult/${appData.id}`"
+                >修改评分策略</a-button
+              >
+              <a-button v-if="isMine" :href="`/edit/app/${appData.id}`"
+                >修改应用</a-button
+              >
             </a-space>
           </p>
         </a-col>
-        <a-col flex="320px">
+        <a-col flex="300px">
           <a-image height="320px" :src="appData.appIcon" />
         </a-col>
       </a-row>
@@ -34,11 +43,12 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, watchEffect, withDefaults } from "vue";
+import { computed, defineProps, ref, watchEffect, withDefaults } from "vue";
 import message from "@arco-design/web-vue/es/message";
 import { getAppVoByIdUsingGet } from "@/api/appController";
 import API from "@/api";
 import { APP_TYPE_MAP, SCORING_STRATEGY_MAP } from "@/enum/CommonEnum";
+import { useLoginUserStore } from "@/store/UserStore";
 
 const appData = ref<API.AppVO>({});
 
@@ -74,6 +84,16 @@ const loadData = async () => {
  */
 watchEffect(() => {
   loadData();
+});
+
+/**
+ * 获取登录用户
+ */
+const userStore = useLoginUserStore();
+let user = userStore.loginUser;
+
+const isMine = computed(() => {
+  return user.id && user.id === appData.value.userId;
 });
 </script>
 
