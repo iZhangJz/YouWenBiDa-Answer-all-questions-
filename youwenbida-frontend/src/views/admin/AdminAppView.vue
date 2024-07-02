@@ -30,6 +30,7 @@
     </a-form-item>
   </a-form>
   <a-table
+    :bordered="{ cell: true }"
     :columns="columns"
     :data="dataList"
     @page-change="onPageChange"
@@ -259,6 +260,7 @@ const columns = [
     ellipsis: true,
     tooltip: true,
     width: 58,
+    fixed: "left",
   },
   {
     title: "应用名",
@@ -341,12 +343,14 @@ const columns = [
     slotName: "reviewOptional",
     align: "center",
     width: 120,
+    fixed: "right",
   },
   {
     title: "其他操作",
     slotName: "otherOptional",
     align: "center",
     width: 120,
+    fixed: "right",
   },
 ] as const;
 </script>

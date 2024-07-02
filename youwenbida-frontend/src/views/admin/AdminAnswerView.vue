@@ -30,6 +30,7 @@
     </a-form-item>
   </a-form>
   <a-table
+    :bordered="{ cell: true }"
     :columns="columns"
     :data="dataList"
     @page-change="onPageChange"

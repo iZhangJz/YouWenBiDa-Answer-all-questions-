@@ -38,6 +38,7 @@
     </a-form-item>
   </a-form>
   <a-table
+    :bordered="{ cell: true }"
     :columns="columns"
     :data="dataList"
     @page-change="onPageChange"
@@ -202,21 +203,29 @@ const columns = [
   {
     title: "Id",
     dataIndex: "id",
+    width: 48,
+    fixed: "left",
   },
   {
     title: "内容",
     dataIndex: "questionContent",
     slotName: "questionContent",
+    width: 1200,
+    innerHeight: 200,
   },
   {
     title: "所属应用",
     dataIndex: "appId",
     width: 88,
+    ellipsis: true,
+    tooltip: true,
   },
   {
     title: "所属用户",
     dataIndex: "userId",
     width: 88,
+    ellipsis: true,
+    tooltip: true,
   },
   {
     title: "创建时间",
@@ -233,6 +242,8 @@ const columns = [
   {
     title: "操作",
     slotName: "optional",
+    width: 160,
+    fixed: "right",
   },
 ];
 </script>
