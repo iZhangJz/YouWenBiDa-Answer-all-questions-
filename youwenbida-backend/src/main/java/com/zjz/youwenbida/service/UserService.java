@@ -6,8 +6,9 @@ import com.zjz.youwenbida.model.dto.user.UserQueryRequest;
 import com.zjz.youwenbida.model.entity.User;
 import com.zjz.youwenbida.model.vo.LoginUserVO;
 import com.zjz.youwenbida.model.vo.UserVO;
-import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 用户服务

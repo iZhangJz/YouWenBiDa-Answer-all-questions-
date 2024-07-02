@@ -55,7 +55,6 @@ public class AppController {
         BeanUtils.copyProperties(appAddRequest, app);
         // 数据校验
         appService.validApp(app, true);
-        // todo 填充默认值
         User loginUser = userService.getLoginUser(request);
         app.setUserId(loginUser.getId());
         // 写入数据库

@@ -1,14 +1,13 @@
 package com.zjz.youwenbida.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjz.youwenbida.common.ErrorCode;
+import com.zjz.youwenbida.constant.CommonConstant;
 import com.zjz.youwenbida.exception.ThrowUtils;
 import com.zjz.youwenbida.mapper.QuestionMapper;
-import com.zjz.youwenbida.model.dto.question.QuestionContentDTO;
 import com.zjz.youwenbida.model.dto.question.QuestionQueryRequest;
 import com.zjz.youwenbida.model.entity.Question;
 import com.zjz.youwenbida.model.entity.User;
@@ -16,6 +15,7 @@ import com.zjz.youwenbida.model.vo.QuestionVO;
 import com.zjz.youwenbida.model.vo.UserVO;
 import com.zjz.youwenbida.service.QuestionService;
 import com.zjz.youwenbida.service.UserService;
+import com.zjz.youwenbida.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -87,6 +87,14 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         Long userId = questionQueryRequest.getUserId();
         Date createTime = questionQueryRequest.getCreateTime();
         String searchText = questionQueryRequest.getSearchText();
+        String sortField = questionQueryRequest.getSortField();
+        String sortOrder = questionQueryRequest.getSortOrder();
+
+        // 排序
+        if (StringUtils.isNotBlank(sortField) && StringUtils.isNotBlank(sortOrder)) {
+            queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
+                    sortField);
+        }
 
         // 从多字段中搜索
         if (StringUtils.isNotBlank(searchText)) {

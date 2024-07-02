@@ -1,6 +1,5 @@
 package com.zjz.youwenbida.controller;
 
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zjz.youwenbida.annotation.AuthCheck;
@@ -11,15 +10,12 @@ import com.zjz.youwenbida.common.ResultUtils;
 import com.zjz.youwenbida.constant.UserConstant;
 import com.zjz.youwenbida.exception.BusinessException;
 import com.zjz.youwenbida.exception.ThrowUtils;
-import com.zjz.youwenbida.model.dto.question.QuestionQueryRequest;
 import com.zjz.youwenbida.model.dto.scoringResult.ScoringResultAddRequest;
 import com.zjz.youwenbida.model.dto.scoringResult.ScoringResultEditRequest;
 import com.zjz.youwenbida.model.dto.scoringResult.ScoringResultQueryRequest;
 import com.zjz.youwenbida.model.dto.scoringResult.ScoringResultUpdateRequest;
-import com.zjz.youwenbida.model.entity.Question;
 import com.zjz.youwenbida.model.entity.ScoringResult;
 import com.zjz.youwenbida.model.entity.User;
-import com.zjz.youwenbida.model.vo.QuestionVO;
 import com.zjz.youwenbida.model.vo.ScoringResultVO;
 import com.zjz.youwenbida.service.ScoringResultService;
 import com.zjz.youwenbida.service.UserService;
@@ -29,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * 结果分数表接口
@@ -232,6 +227,7 @@ public class ScoringResultController {
         // 数据校验
         scoringResultService.validScoringResult(scoringResult, false);
         User loginUser = userService.getLoginUser(request);
+        scoringResult.setUserId(loginUser.getId());
         // 判断是否存在
         long id = scoringResultEditRequest.getId();
         ScoringResult oldScoringResult = scoringResultService.getById(id);

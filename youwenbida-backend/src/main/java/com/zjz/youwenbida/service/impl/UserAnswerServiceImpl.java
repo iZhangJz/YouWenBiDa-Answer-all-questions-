@@ -14,7 +14,6 @@ import com.zjz.youwenbida.model.vo.UserAnswerVO;
 import com.zjz.youwenbida.model.vo.UserVO;
 import com.zjz.youwenbida.service.UserAnswerService;
 import com.zjz.youwenbida.service.UserService;
-import com.zjz.youwenbida.utils.ValidEnumUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

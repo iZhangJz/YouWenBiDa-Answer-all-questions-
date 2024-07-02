@@ -1,7 +1,7 @@
 package com.zjz.youwenbida.service;
 
-import com.zjz.youwenbida.model.entity.PostThumb;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zjz.youwenbida.model.entity.PostThumb;
 import com.zjz.youwenbida.model.entity.User;
 
 /**

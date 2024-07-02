@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjz.youwenbida.common.ErrorCode;
+import com.zjz.youwenbida.constant.CommonConstant;
 import com.zjz.youwenbida.exception.ThrowUtils;
 import com.zjz.youwenbida.mapper.ScoringResultMapper;
 import com.zjz.youwenbida.model.dto.scoringResult.ScoringResultQueryRequest;
@@ -14,6 +15,7 @@ import com.zjz.youwenbida.model.vo.ScoringResultVO;
 import com.zjz.youwenbida.model.vo.UserVO;
 import com.zjz.youwenbida.service.ScoringResultService;
 import com.zjz.youwenbida.service.UserService;
+import com.zjz.youwenbida.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +61,6 @@ public class ScoringResultServiceImpl
         if (add) {
             ThrowUtils.throwIf(StringUtils.isBlank(resultName), ErrorCode.PARAMS_ERROR,"结果名称不能为空");
             ThrowUtils.throwIf(ObjectUtils.isEmpty(appId), ErrorCode.PARAMS_ERROR,"应用id不能为空");
-            ThrowUtils.throwIf(ObjectUtils.isEmpty(userId), ErrorCode.PARAMS_ERROR,"用户id不能为空");
         }
         // 修改数据时，有参数则校验
         if (StringUtils.isNotBlank(resultName)) {
@@ -100,6 +101,15 @@ public class ScoringResultServiceImpl
         Long userId = scoringResultQueryRequest.getUserId();
         Date createTime = scoringResultQueryRequest.getCreateTime();
         String searchText = scoringResultQueryRequest.getSearchText();
+        String sortField = scoringResultQueryRequest.getSortField();
+        String sortOrder = scoringResultQueryRequest.getSortOrder();
+
+        // 设置排序条件
+        if (StringUtils.isNotBlank(sortField) && StringUtils.isNotBlank(sortOrder)){
+            queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
+                    sortField);
+        }
+
 
         // 从多字段中搜索
         if (StringUtils.isNotBlank(searchText)) {

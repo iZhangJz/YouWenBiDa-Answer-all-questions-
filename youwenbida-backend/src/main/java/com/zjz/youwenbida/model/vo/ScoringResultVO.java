@@ -47,6 +47,16 @@ public class ScoringResultVO implements Serializable {
     private Long userId;
 
     /**
+     * 结果属性集合 JSON，如 [I,S,T,J]
+     */
+    private List<String> resultProp;
+
+    /**
+     * 结果得分范围，如 80，表示 80及以上的分数命中此结果
+     */
+    private Integer resultScoreRange;
+
+    /**
      * 创建时间
      */
     private Date createTime;
@@ -74,7 +84,7 @@ public class ScoringResultVO implements Serializable {
         }
         ScoringResult scoringResult = new ScoringResult();
         BeanUtils.copyProperties(scoringResultVO, scoringResult);
-
+        scoringResult.setResultProp(JSONUtil.toJsonStr(scoringResultVO.getResultProp()));
         return scoringResult;
     }
 
@@ -90,6 +100,7 @@ public class ScoringResultVO implements Serializable {
         }
         ScoringResultVO scoringResultVO = new ScoringResultVO();
         BeanUtils.copyProperties(scoringResult, scoringResultVO);
+        scoringResultVO.setResultProp(JSONUtil.toList(scoringResult.getResultProp(), String.class));
         return scoringResultVO;
     }
 }

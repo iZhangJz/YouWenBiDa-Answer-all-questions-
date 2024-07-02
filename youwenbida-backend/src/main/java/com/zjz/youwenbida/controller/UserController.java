@@ -9,32 +9,20 @@ import com.zjz.youwenbida.common.ResultUtils;
 import com.zjz.youwenbida.constant.UserConstant;
 import com.zjz.youwenbida.exception.BusinessException;
 import com.zjz.youwenbida.exception.ThrowUtils;
-import com.zjz.youwenbida.model.dto.user.UserAddRequest;
-import com.zjz.youwenbida.model.dto.user.UserLoginRequest;
-import com.zjz.youwenbida.model.dto.user.UserQueryRequest;
-import com.zjz.youwenbida.model.dto.user.UserRegisterRequest;
-import com.zjz.youwenbida.model.dto.user.UserUpdateMyRequest;
-import com.zjz.youwenbida.model.dto.user.UserUpdateRequest;
+import com.zjz.youwenbida.model.dto.user.*;
 import com.zjz.youwenbida.model.entity.User;
 import com.zjz.youwenbida.model.vo.LoginUserVO;
 import com.zjz.youwenbida.model.vo.UserVO;
 import com.zjz.youwenbida.service.UserService;
-
-import java.util.List;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import static com.zjz.youwenbida.service.impl.UserServiceImpl.SALT;
 

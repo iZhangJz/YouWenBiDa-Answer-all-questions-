@@ -42,10 +42,5 @@ public class ScoringResultAddRequest implements Serializable {
      */
     private Long appId;
 
-    /**
-     * 创建用户 id
-     */
-    private Long userId;
-
     private static final long serialVersionUID = 1L;
 }
