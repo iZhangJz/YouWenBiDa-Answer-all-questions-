@@ -39,3 +39,17 @@ export const FILE_UPLOAD_BIZ_ENUM: { [key: string]: string } = {
   RESULT_PICTURE: "result_picture",
   APP_ICON: "app_icon",
 };
+
+/**
+ * 排序规则枚举
+ */
+export const SORT_RULE_ENUM = {
+  /**
+   * 升序
+   */
+  ASC: "ascend",
+  /**
+   * 降序
+   */
+  DESC: "descend",
+};

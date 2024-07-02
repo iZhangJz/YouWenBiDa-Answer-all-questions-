@@ -610,7 +610,6 @@ declare namespace API {
     resultPicture?: string;
     resultProp?: string[];
     resultScoreRange?: number;
-    userId?: number;
   };
 
   type ScoringResultEditRequest = {
@@ -659,6 +658,8 @@ declare namespace API {
     resultDesc?: string;
     resultName?: string;
     resultPicture?: string;
+    resultProp?: string[];
+    resultScoreRange?: number;
     updateTime?: string;
     user?: UserVO;
     userId?: number;

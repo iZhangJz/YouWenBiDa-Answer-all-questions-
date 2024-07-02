@@ -114,6 +114,7 @@ import {
   listQuestionVoByPageUsingPost,
 } from "@/api/questionController";
 import { useRouter } from "vue-router";
+import { SORT_RULE_ENUM } from "@/enum/CommonEnum";
 
 const router = useRouter();
 
@@ -191,7 +192,7 @@ const loadData = async () => {
     current: 1,
     pageSize: 1,
     sortField: "createTime",
-    sortOrder: "descend",
+    sortOrder: SORT_RULE_ENUM.DESC,
   });
   if (res.data.code === 0) {
     oldQuestion.value = res.data?.data.records[0];
