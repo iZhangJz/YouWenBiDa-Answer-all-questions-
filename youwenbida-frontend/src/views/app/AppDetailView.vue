@@ -20,14 +20,19 @@
           </p>
           <p style="margin-top: 64px">
             <a-space class="button">
-              <a-button type="primary">开始答题</a-button>
+              <a-button type="primary" :href="`/answer/do/${appData.id}`">
+                开始答题
+              </a-button>
               <a-button>分享应用</a-button>
-              <a-button v-if="isMine" :href="`/add/question/${appData.id}`"
-                >修改题目</a-button
+              <a-button v-if="isMine" :href="`/add/question/${appData.id}`">
+                修改题目
+              </a-button>
+              <a-button
+                v-if="isMine"
+                :href="`/add/scoringResult/${appData.id}`"
               >
-              <a-button v-if="isMine" :href="`/add/scoringResult/${appData.id}`"
-                >修改评分策略</a-button
-              >
+                修改评分策略
+              </a-button>
               <a-button v-if="isMine" :href="`/edit/app/${appData.id}`"
                 >修改应用</a-button
               >

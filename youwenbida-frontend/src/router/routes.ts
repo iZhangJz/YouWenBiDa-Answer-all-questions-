@@ -9,11 +9,13 @@ import AdminQuestionView from "@/views/admin/AdminQuestionView.vue";
 import AdminScoringResultView from "@/views/admin/AdminScoringResultView.vue";
 import AdminAnswerView from "@/views/admin/AdminAnswerView.vue";
 import AdminAppView from "@/views/admin/AdminAppView.vue";
-import App from "@/App.vue";
 import AppDetailView from "@/views/app/AppDetailView.vue";
 import AddScoringResultView from "@/views/app/AddScoringResultView.vue";
 import AddQuestionView from "@/views/app/AddQuestionView.vue";
 import AddAppView from "@/views/app/AddAppView.vue";
+import DoAnswerView from "@/views/answer/DoAnswerView.vue";
+import AnswerResultView from "@/views/answer/AnswerResultView.vue";
+import MyAnswerView from "@/views/answer/MyAnswerView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -129,6 +131,35 @@ export const routes: Array<RouteRecordRaw> = [
     props: true,
     meta: {
       hideInMenu: true,
+    },
+  },
+  {
+    path: "/answer/do/:appId",
+    name: "应用答题",
+    component: DoAnswerView,
+    props: true,
+    meta: {
+      hideInMenu: true,
+      access: [ACCESS_ROLE_ENUM.USER, ACCESS_ROLE_ENUM.ADMIN],
+    },
+  },
+  {
+    path: "/answer/result/:id",
+    name: "答题结果",
+    component: AnswerResultView,
+    props: true,
+    meta: {
+      hideInMenu: true,
+      access: [ACCESS_ROLE_ENUM.USER, ACCESS_ROLE_ENUM.ADMIN],
+    },
+  },
+  {
+    path: "/answer/my",
+    name: "我的答题",
+    component: MyAnswerView,
+    props: true,
+    meta: {
+      access: [ACCESS_ROLE_ENUM.USER, ACCESS_ROLE_ENUM.ADMIN],
     },
   },
 ];

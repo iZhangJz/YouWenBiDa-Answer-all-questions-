@@ -10,7 +10,8 @@ router.beforeEach(async (to, from, next) => {
   // 获取当前用户
   const userStore = useLoginUserStore();
   let user = userStore.loginUser;
-  const needAccess = (to.meta?.access as string) ?? ACCESS_ROLE_ENUM.NOT_LOGIN;
+  console.log("to.meta?.access:", to.meta?.access);
+  const needAccess = to.meta?.access ?? [ACCESS_ROLE_ENUM.NOT_LOGIN];
 
   // 尝试自动登录
   if (!user || user.userName === "未登录") {
@@ -27,7 +28,7 @@ router.beforeEach(async (to, from, next) => {
     next(`/user/login?redirect=${to.fullPath}`);
   }
   // 用户已经登录，则校验权限
-  if (!checkAccess(user, needAccess)) {
+  if (!checkAccess(user, needAccess as string[])) {
     // 没有权限，则跳转到403页面
     next("/403");
     return;
