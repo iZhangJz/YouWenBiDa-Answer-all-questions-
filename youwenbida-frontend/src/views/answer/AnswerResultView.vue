@@ -34,6 +34,7 @@
               <a-button type="primary" :href="`/answer/do/${appData.id}`">
                 重新回答
               </a-button>
+              <a-button href="/"> 回到主页 </a-button>
             </a-space>
           </p>
         </a-col>

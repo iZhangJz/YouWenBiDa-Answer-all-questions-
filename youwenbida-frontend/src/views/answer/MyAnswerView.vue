@@ -7,11 +7,11 @@
     :model="formSearchParams"
     @submit="searchSubmit"
   >
-    <a-form-item field="userId" label="所属用户">
+    <a-form-item field="id" label="用户答案Id">
       <a-input
         allow-clear
-        v-model="formSearchParams.userId"
-        placeholder="请输入所属用户"
+        v-model="formSearchParams.id"
+        placeholder="请输入用户答案Id"
         @clear="initData"
       />
     </a-form-item>
@@ -19,7 +19,7 @@
       <a-input
         allow-clear
         v-model="formSearchParams.appId"
-        placeholder="请输入所属应用"
+        placeholder="请输入所属应用Id"
         @clear="initData"
       />
     </a-form-item>
@@ -44,17 +44,15 @@
     <template #createTime="{ record }">
       {{ formatDate(record.createTime) }}
     </template>
-    <template #updateTime="{ record }">
-      {{ formatDate(record.createTime) }}
+    <template #resultPicture="{ record }">
+      <a-image :width="64" :src="record.resultPicture" />
     </template>
-    <template #userAvatar="{ record }">
-      <a-image :size="40" :src="record.userAvatar" />
+    <template #resultScore="{ record }">
+      <div v-if="record.resultScore === null">/</div>
+      <div v-else>{{ record.resultScore }}</div>
     </template>
     <template #optional="{ record }">
       <a-space>
-        <a-button size="mini" type="primary" @click="doUpdate(record)"
-          >修改</a-button
-        >
         <a-button size="mini" status="danger" @click="doDelete(record)"
           >删除</a-button
         >
@@ -68,9 +66,9 @@ import { ref, watchEffect } from "vue";
 import message from "@arco-design/web-vue/es/message";
 import API from "@/api";
 import {
-  deleteScoringResultUsingPost,
-  listScoringResultByPageUsingPost,
-} from "@/api/scoringResultController";
+  deleteUserAnswerUsingPost,
+  listMyUserAnswerVoByPageUsingPost,
+} from "@/api/userAnswerController";
 
 /**
  * 初始化搜索参数
@@ -83,37 +81,37 @@ const initSearchParams = {
 /**
  * 搜索参数
  */
-const searchParams = ref<API.ScoringResultQueryRequest>({
+const searchParams = ref<API.UserAnswerQueryRequest>({
   ...initSearchParams,
 });
 
-const formSearchParams = ref<API.ScoringResultQueryRequest>({});
+const formSearchParams = ref<API.UserAnswerQueryRequest>({});
 
-const dataList = ref<API.ScoringResult[]>([]);
+const dataList = ref<API.UserAnswerVO[]>([]);
 const total = ref(0);
 
 /**
  * 数据加载
  */
 const loadData = async () => {
-  const res = await listScoringResultByPageUsingPost(searchParams.value);
+  const res = await listMyUserAnswerVoByPageUsingPost(searchParams.value);
   const data = res.data;
   if (data.code === 0) {
     dataList.value = data.data?.records || [];
     total.value = data.data?.total || 0;
   } else {
-    message.error("获取评分结果数据失败," + data.message);
+    message.error("获取用户答案数据失败," + data.message);
   }
 };
 
 const initData = async () => {
-  const res = await listScoringResultByPageUsingPost(initSearchParams);
+  const res = await listMyUserAnswerVoByPageUsingPost(initSearchParams);
   const data = res.data;
   if (data.code === 0) {
     dataList.value = data.data?.records || [];
     total.value = data.data?.total || 0;
   } else {
-    message.error("获取评分结果数据失败," + data.message);
+    message.error("获取用户答案数据失败," + data.message);
   }
 };
 
@@ -143,11 +141,11 @@ const onPageChange = (page: number) => {
 };
 
 /**
- * 删除评分结果
+ * 删除用户答案
  * @param record
  */
-const doDelete = async (record: API.ScoringResult) => {
-  const res = await deleteScoringResultUsingPost({
+const doDelete = async (record: API.UserAnswer) => {
+  const res = await deleteUserAnswerUsingPost({
     id: record.id,
   });
   const data = res.data;
@@ -155,15 +153,15 @@ const doDelete = async (record: API.ScoringResult) => {
   if (data.code === 0) {
     loadData();
   } else {
-    message.error("删除评分结果数据失败," + data.message);
+    message.error("删除用户答案数据失败," + data.message);
   }
 };
 
 /**
- * TODO 修改评分结果
+ * TODO 修改用户答案
  * @param record
  */
-const doUpdate = (record: API.ScoringResult) => {
+const doUpdate = (record: API.UserAnswer) => {
   console.log(record);
 };
 
@@ -191,59 +189,53 @@ const columns = [
     title: "Id",
     dataIndex: "id",
     width: 58,
-  },
-  {
-    title: "结果名称",
-    dataIndex: "resultName",
-    ellipsis: true,
-    tooltip: true,
-  },
-  {
-    title: "结果描述",
-    dataIndex: "resultDesc",
-    ellipsis: true,
-    tooltip: true,
-  },
-  {
-    title: "结果图片",
-    dataIndex: "resultPicture",
-    slotName: "resultPicture",
-  },
-  {
-    title: "结果属性",
-    dataIndex: "resultProp",
-    slotName: "resultProp",
-  },
-  {
-    title: "得分范围",
-    dataIndex: "resultScoreRange",
     align: "center",
+  },
+  {
+    title: "我的答案",
+    dataIndex: "choices",
+    ellipsis: true,
+    tooltip: true,
   },
   {
     title: "所属应用",
     dataIndex: "appId",
-  },
-  {
-    title: "所属用户",
-    dataIndex: "userId",
+    align: "center",
+    width: 100,
     ellipsis: true,
     tooltip: true,
   },
   {
-    title: "创建时间",
-    dataIndex: "createTime",
-    slotName: "createTime",
-    width: 160,
+    title: "结果名称",
+    dataIndex: "resultName",
+    align: "center",
   },
   {
-    title: "更新时间",
-    dataIndex: "updateTime",
-    slotName: "updateTime",
-    width: 160,
+    title: "结果描述",
+    dataIndex: "resultDesc",
+  },
+  {
+    title: "结果分数",
+    dataIndex: "resultScore",
+    align: "center",
+    slotName: "resultScore",
+  },
+  {
+    title: "结果图片",
+    dataIndex: "resultPicture",
+    align: "center",
+    slotName: "resultPicture",
+  },
+  {
+    title: "答题时间",
+    dataIndex: "createTime",
+    slotName: "createTime",
   },
   {
     title: "操作",
     slotName: "optional",
+    width: 120,
+    align: "center",
   },
 ];
 </script>

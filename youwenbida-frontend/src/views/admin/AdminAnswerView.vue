@@ -45,7 +45,7 @@
       {{ formatDate(record.createTime) }}
     </template>
     <template #updateTime="{ record }">
-      {{ formatDate(record.createTime) }}
+      {{ formatDate(record.updateTime) }}
     </template>
     <template #userAvatar="{ record }">
       <a-image :size="40" :src="record.userAvatar" />
