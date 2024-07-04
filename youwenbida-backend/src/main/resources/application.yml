@@ -71,3 +71,7 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.zjz.youwenbida.controller
+
+# AI 配置
+ai:
+  key: 7bc2bb36df66c4aafaa404980b2fc5a9.zk5Clixo11Din83n

@@ -1,19 +1,26 @@
 package com.zjz.youwenbida.controller;
 
+import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zhipu.oapi.service.v4.model.ChatMessage;
 import com.zjz.youwenbida.annotation.AuthCheck;
 import com.zjz.youwenbida.common.BaseResponse;
 import com.zjz.youwenbida.common.DeleteRequest;
 import com.zjz.youwenbida.common.ErrorCode;
 import com.zjz.youwenbida.common.ResultUtils;
+import com.zjz.youwenbida.constant.AIPromptConstant;
 import com.zjz.youwenbida.constant.UserConstant;
 import com.zjz.youwenbida.exception.BusinessException;
 import com.zjz.youwenbida.exception.ThrowUtils;
+import com.zjz.youwenbida.manager.AIManager;
 import com.zjz.youwenbida.model.dto.question.*;
+import com.zjz.youwenbida.model.entity.App;
 import com.zjz.youwenbida.model.entity.Question;
 import com.zjz.youwenbida.model.entity.User;
+import com.zjz.youwenbida.model.enums.AppTypeEnum;
 import com.zjz.youwenbida.model.vo.QuestionVO;
+import com.zjz.youwenbida.service.AppService;
 import com.zjz.youwenbida.service.QuestionService;
 import com.zjz.youwenbida.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 问题表接口
@@ -39,8 +47,13 @@ public class QuestionController {
     @Resource
     private UserService userService;
 
-    // region 增删改查
+    @Resource
+    private AppService appService;
 
+    @Resource
+    private AIManager aiManager;
+
+    // region 增删改查
     /**
      * 创建问题表
      *
@@ -192,7 +205,7 @@ public class QuestionController {
 
 
     private BaseResponse<Page<QuestionVO>> getQuestionVOPageResponse(QuestionQueryRequest questionQueryRequest,
-                                                           HttpServletRequest request) {
+                                                                     HttpServletRequest request) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
@@ -237,4 +250,45 @@ public class QuestionController {
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
+    // endregion
+
+    // region AI 生成
+    @PostMapping("/ai/generate")
+    public BaseResponse<List<QuestionContentDTO>> generateQuestionByAI(
+            @RequestBody AIGenerateQuestionRequest questionGenerateRequest, HttpServletRequest request) {
+        if (questionGenerateRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //1.获取APP
+        Long appId = questionGenerateRequest.getAppId();
+        App app = appService.getById(appId);
+        if (app == null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"应用不存在");
+        }
+        int questionNumber = questionGenerateRequest.getQuestionNumber();
+        int optionNumber = questionGenerateRequest.getOptionNumber();
+        // 2.生成用户 prompt
+        String userPrompt = generateUserPrompt(app, questionNumber, optionNumber);
+        // 3.调用 AI 生成问题
+        String res = aiManager.doSyncRequest(AIPromptConstant.AI_GENERATE_QUESTION_SYS_PROMPT, userPrompt,null);
+        // 4.解析 AI 返回的 json 数据
+        int start = res.indexOf('[');
+        int end = res.lastIndexOf(']');
+        String resJson = res.substring(start, end + 1);
+        List<QuestionContentDTO> questionContentDTOS = JSONUtil.toList(resJson, QuestionContentDTO.class);
+        return ResultUtils.success(questionContentDTOS);
+    }
+
+    private String generateUserPrompt(App app,int questionNumber,int optionNumber){
+        StringBuilder userMessage = new StringBuilder();
+        userMessage.append(app.getAppName()).append("\n");
+        userMessage.append(app.getAppDesc()).append("\n");
+        userMessage.append(Objects
+                .requireNonNull(AppTypeEnum.getEnumByValue(app.getAppType())).getText()).append("类").append("\n");
+        userMessage.append(questionNumber).append("\n");
+        userMessage.append(optionNumber).append("\n");
+        return userMessage.toString();
+    }
+
+    // endregion
 }

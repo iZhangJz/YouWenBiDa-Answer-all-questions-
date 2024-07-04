@@ -48,20 +48,15 @@ public class UserAnswerServiceImpl extends ServiceImpl<UserAnswerMapper, UserAns
     public void validUserAnswer(UserAnswer userAnswer, boolean add) {
         ThrowUtils.throwIf(userAnswer == null, ErrorCode.PARAMS_ERROR);
         Long appId = userAnswer.getAppId();
-        Integer appType = userAnswer.getAppType();
-        Integer scoringStrategy = userAnswer.getScoringStrategy();
         Long resultId = userAnswer.getResultId();
         String resultName = userAnswer.getResultName();
         String resultPicture = userAnswer.getResultPicture();
         Integer resultScore = userAnswer.getResultScore();
-        Long userId = userAnswer.getUserId();
 
         // 创建数据时，参数不能为空
         if (add) {
             ThrowUtils.throwIf(ObjectUtils.isEmpty(appId),
                     ErrorCode.PARAMS_ERROR, "应用ID不能为空");
-            ThrowUtils.throwIf(ObjectUtils.isEmpty(userId),
-                    ErrorCode.PARAMS_ERROR,"用户ID不能为空");
         }
         if (ObjectUtils.isNotEmpty(resultId)) {
             ThrowUtils.throwIf(resultId < 0,
