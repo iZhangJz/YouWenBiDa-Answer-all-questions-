@@ -16,9 +16,15 @@
           :content-flex="false"
           :merge-props="false"
         >
-          <a-button @click="handleAddQuestion(questionContent.length)">
-            底部添加题目
-          </a-button>
+          <a-space>
+            <a-button @click="handleAddQuestion(questionContent.length)">
+              底部添加题目
+            </a-button>
+            <AIGenerateQuestionView
+              :appId="appId"
+              :onSuccess="generateQuesByAiSuccess"
+            />
+          </a-space>
           <div
             v-for="(question, questionIndex) in questionContent"
             :key="questionIndex"
@@ -115,6 +121,7 @@ import {
 } from "@/api/questionController";
 import { useRouter } from "vue-router";
 import { SORT_RULE_ENUM } from "@/enum/CommonEnum";
+import AIGenerateQuestionView from "@/views/app/components/AIGenerateQuestionView.vue";
 
 const router = useRouter();
 
@@ -235,6 +242,11 @@ const handleSubmit = async () => {
   } else {
     message.error("编辑应用题目失败," + data.message);
   }
+};
+
+const generateQuesByAiSuccess = (result: API.QuestionContentDTO[]) => {
+  console.log(result);
+  questionContent.value = [...questionContent.value, ...result];
 };
 </script>
 

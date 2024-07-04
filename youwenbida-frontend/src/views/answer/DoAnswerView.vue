@@ -32,6 +32,7 @@
             type="primary"
             v-if="currentQuestionIndex === questionContent.length"
             circle
+            :loading="loading"
             :disabled="!currentAnswer"
             @click="doSubmit"
           >
@@ -71,7 +72,7 @@ const router = useRouter();
  * 接收 app 数据
  */
 const appData = ref<API.AppVO>({});
-
+const loading = ref(false);
 /**
  * 接收题目数据
  */
@@ -104,7 +105,6 @@ const props = withDefaults(defineProps<Props>(), {
  * 数据加载
  */
 const loadData = async () => {
-  // 获取应用
   if (!props.appId || props.appId < 0) {
     return;
   }
@@ -133,6 +133,7 @@ const loadData = async () => {
   }
 };
 const doSubmit = async () => {
+  loading.value = true;
   const res = await addUserAnswerUsingPost({
     appId: props.appId,
     choices: answerList,
@@ -144,6 +145,7 @@ const doSubmit = async () => {
   } else {
     message.error("提交失败," + res.data.message);
   }
+  loading.value = false;
 };
 
 /**
