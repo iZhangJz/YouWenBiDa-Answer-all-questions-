@@ -3,6 +3,8 @@ package com.zjz.youwenbida.scoring.impl;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.zjz.youwenbida.annotation.ScoringStrategyCheck;
+import com.zjz.youwenbida.constant.AppScoringStrategyConstant;
+import com.zjz.youwenbida.constant.AppTypeConstant;
 import com.zjz.youwenbida.model.dto.question.QuestionContentDTO;
 import com.zjz.youwenbida.model.entity.App;
 import com.zjz.youwenbida.model.entity.Question;
@@ -18,7 +20,7 @@ import java.util.List;
 /**
  * 用户自定义得分类评分策略
  */
-@ScoringStrategyCheck(appType = 0, scoringStrategy = 0)
+@ScoringStrategyCheck(appType = AppTypeConstant.SCORE, scoringStrategy = AppScoringStrategyConstant.CUSTOMIZE)
 public class CustomMarkScoring implements IScoringStrategy {
     @Resource
     private QuestionService questionService;

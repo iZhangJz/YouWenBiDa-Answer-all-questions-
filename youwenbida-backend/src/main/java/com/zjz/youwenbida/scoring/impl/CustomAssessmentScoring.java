@@ -3,6 +3,8 @@ package com.zjz.youwenbida.scoring.impl;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.zjz.youwenbida.annotation.ScoringStrategyCheck;
+import com.zjz.youwenbida.constant.AppScoringStrategyConstant;
+import com.zjz.youwenbida.constant.AppTypeConstant;
 import com.zjz.youwenbida.model.dto.question.QuestionContentDTO;
 import com.zjz.youwenbida.model.entity.App;
 import com.zjz.youwenbida.model.entity.Question;
@@ -20,7 +22,7 @@ import java.util.List;
 /**
  * 用户自定义测评类评分策略
  */
-@ScoringStrategyCheck(appType = 1, scoringStrategy = 0)
+@ScoringStrategyCheck(appType = AppTypeConstant.TEST,scoringStrategy = AppScoringStrategyConstant.CUSTOMIZE)
 public class CustomAssessmentScoring implements IScoringStrategy {
 
     @Resource
@@ -83,7 +85,8 @@ public class CustomAssessmentScoring implements IScoringStrategy {
     }
 
     @NotNull
-    private static HashMap<String, Integer> getPropResult(List<String> choices, List<QuestionContentDTO> questionContentDTOS) {
+    private static HashMap<String, Integer> getPropResult(
+            List<String> choices, List<QuestionContentDTO> questionContentDTOS) {
         HashMap<String, Integer> propResult = new HashMap<>();
 
         // 3.遍历用户提交的答案 choices 答案是顺序的 一个 choice 对应一个题目
