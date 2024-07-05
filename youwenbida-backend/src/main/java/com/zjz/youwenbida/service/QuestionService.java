@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zjz.youwenbida.model.dto.question.QuestionQueryRequest;
 import com.zjz.youwenbida.model.entity.Question;
 import com.zjz.youwenbida.model.vo.QuestionVO;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,4 +49,11 @@ public interface QuestionService extends IService<Question> {
      * @return
      */
     Page<QuestionVO> getQuestionVOPage(Page<Question> questionPage, HttpServletRequest request);
+
+    /**
+     * 生成AI问题 SSE
+     * @param userPrompt
+     * @return
+     */
+    SseEmitter generateAIQuestionSSE(String userPrompt);
 }

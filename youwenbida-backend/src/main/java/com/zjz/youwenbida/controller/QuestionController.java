@@ -1,9 +1,7 @@
 package com.zjz.youwenbida.controller;
 
-import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zhipu.oapi.service.v4.model.ChatMessage;
 import com.zjz.youwenbida.annotation.AuthCheck;
 import com.zjz.youwenbida.common.BaseResponse;
 import com.zjz.youwenbida.common.DeleteRequest;
@@ -26,6 +24,7 @@ import com.zjz.youwenbida.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -256,19 +255,8 @@ public class QuestionController {
     @PostMapping("/ai/generate")
     public BaseResponse<List<QuestionContentDTO>> generateQuestionByAI(
             @RequestBody AIGenerateQuestionRequest questionGenerateRequest, HttpServletRequest request) {
-        if (questionGenerateRequest == null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        //1.获取APP
-        Long appId = questionGenerateRequest.getAppId();
-        App app = appService.getById(appId);
-        if (app == null){
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"应用不存在");
-        }
-        int questionNumber = questionGenerateRequest.getQuestionNumber();
-        int optionNumber = questionGenerateRequest.getOptionNumber();
         // 2.生成用户 prompt
-        String userPrompt = generateUserPrompt(app, questionNumber, optionNumber);
+        String userPrompt = validateRequestAndGetAppPrompt(questionGenerateRequest);
         // 3.调用 AI 生成问题
         String res = aiManager.doSyncRequest(AIPromptConstant.AI_GENERATE_QUESTION_SYS_PROMPT, userPrompt,null);
         // 4.解析 AI 返回的 json 数据
@@ -279,16 +267,57 @@ public class QuestionController {
         return ResultUtils.success(questionContentDTOS);
     }
 
-    private String generateUserPrompt(App app,int questionNumber,int optionNumber){
-        StringBuilder userMessage = new StringBuilder();
-        userMessage.append(app.getAppName()).append("\n");
-        userMessage.append(app.getAppDesc()).append("\n");
-        userMessage.append(Objects
-                .requireNonNull(AppTypeEnum.getEnumByValue(app.getAppType())).getText()).append("类").append("\n");
-        userMessage.append(questionNumber).append("\n");
-        userMessage.append(optionNumber).append("\n");
-        return userMessage.toString();
+    /**
+     * AI 智能生成问题 返回流式数据
+     * @param questionGenerateRequest
+     * @return
+     */
+    @GetMapping("/ai/generate/sse")
+    public SseEmitter generateQuestionByAIWithSSE(AIGenerateQuestionRequest questionGenerateRequest) {
+        String userPrompt = validateRequestAndGetAppPrompt(questionGenerateRequest);
+        // 2.生成用户 prompt
+        return questionService.generateAIQuestionSSE(userPrompt);
     }
+
+    /**
+     * 生成用户Prompt
+     * @param app
+     * @param questionNumber
+     * @param optionNumber
+     * @return
+     */
+    private String generateUserPrompt(App app,int questionNumber,int optionNumber){
+        return app.getAppName() + "\n" +
+                app.getAppDesc() + "\n" +
+                Objects
+                        .requireNonNull(AppTypeEnum.getEnumByValue(app.getAppType())).getText() +
+                "类" + "\n" +
+                questionNumber + "\n" +
+                optionNumber + "\n";
+    }
+
+
+    /**
+     * 验证请求并获取APP
+     * @param questionGenerateRequest
+     * @return 返回 userPrompt
+     */
+    private String validateRequestAndGetAppPrompt(AIGenerateQuestionRequest questionGenerateRequest) {
+        if (questionGenerateRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //1.获取APP
+        Long appId = questionGenerateRequest.getAppId();
+        App app = appService.getById(appId);
+        if (app == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "应用不存在");
+        }
+        int questionNumber = questionGenerateRequest.getQuestionNumber();
+        int optionNumber = questionGenerateRequest.getOptionNumber();
+        // 2.生成用户 prompt
+        return generateUserPrompt(app, questionNumber, optionNumber);
+    }
+
 
     // endregion
 }

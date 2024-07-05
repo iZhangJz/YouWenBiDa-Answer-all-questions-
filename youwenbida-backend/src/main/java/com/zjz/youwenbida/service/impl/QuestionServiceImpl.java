@@ -1,12 +1,17 @@
 package com.zjz.youwenbida.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhipu.oapi.service.v4.model.ModelData;
 import com.zjz.youwenbida.common.ErrorCode;
+import com.zjz.youwenbida.constant.AIPromptConstant;
 import com.zjz.youwenbida.constant.CommonConstant;
 import com.zjz.youwenbida.exception.ThrowUtils;
+import com.zjz.youwenbida.manager.AIManager;
 import com.zjz.youwenbida.mapper.QuestionMapper;
 import com.zjz.youwenbida.model.dto.question.QuestionQueryRequest;
 import com.zjz.youwenbida.model.entity.Question;
@@ -16,18 +21,20 @@ import com.zjz.youwenbida.model.vo.UserVO;
 import com.zjz.youwenbida.service.QuestionService;
 import com.zjz.youwenbida.service.UserService;
 import com.zjz.youwenbida.utils.SqlUtils;
+import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
 
 /**
  * 问题表服务实现
@@ -40,6 +47,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Resource
     private UserService userService;
 
+    @Resource
+    private AIManager aiManager;
     /**
      * 校验数据
      *
@@ -165,6 +174,57 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         });
         questionVOPage.setRecords(questionVOList);
         return questionVOPage;
+    }
+
+    @Override
+    public SseEmitter generateAIQuestionSSE(String userPrompt) {
+        // 3.建立 SSE 连接对象，0 表示永久不超时
+        SseEmitter emitter = new SseEmitter(0L);
+        // 4.调用 AI 生成问题,获取流式数据
+        Flowable<ModelData> modelDataFlowable = aiManager.doStreamStableRequest(
+                AIPromptConstant.AI_GENERATE_QUESTION_SYS_PROMPT, userPrompt);
+        // 5.解析 AI 返回的 json 数据
+        // 定义一个StringBuilder类型的变量contentBuilder，用于存储消息内容
+        StringBuilder contentBuilder = new StringBuilder();
+        // 定义一个AtomicInteger类型的变量flag，用于记录消息中"{}"的数量
+        AtomicInteger flag = new AtomicInteger(0);
+        // 使用modelDataFlowable将消息分片，并获取每个分片的第一个choice的delta内容
+        modelDataFlowable
+                .observeOn(Schedulers.io())
+                .map(chunk -> chunk.getChoices().get(0).getDelta().getContent())
+                // 将消息中的空格替换为空字符
+                .map(msg -> msg.replaceAll("\\s", ""))
+                // 过滤掉空字符
+                .filter(StrUtil::isNotBlank)
+                // 将消息转换为字符列表
+                .flatMap(msg -> {
+                    List<Character> characterList = new ArrayList<>();
+                    for (Character ch : msg.toCharArray()) {
+                        characterList.add(ch);
+                    }
+                    return Flowable.fromIterable(characterList);
+                })
+                // 当遇到"{"时，将flag加1，当遇到"}"时，将flag减1，当flag为0时，将contentBuilder中的内容发送给emitter
+                .doOnNext(ch -> {
+                    if (ch == '{') {
+                        flag.incrementAndGet();
+                    } else if (ch == '}') {
+                        flag.decrementAndGet();
+                        if (flag.get() == 0) {
+                            contentBuilder.append(ch);
+                            emitter.send(JSONUtil.toJsonStr(contentBuilder.toString()));
+                            contentBuilder.setLength(0);
+                        }
+                    }
+                    if (flag.get() > 0) {
+                        contentBuilder.append(ch);
+                    }
+                })
+                // 当所有消息发送完毕时，调用emitter的complete方法
+                .doOnComplete(emitter::complete)
+                // 订阅消息
+                .subscribe();
+        return emitter;
     }
 
 }
