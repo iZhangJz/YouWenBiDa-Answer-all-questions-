@@ -1,12 +1,6 @@
 <template>
   <a-button type="primary" @click="handleClick">AI 智能生成</a-button>
-  <a-modal
-    v-model:visible="visible"
-    :on-before-ok="handleOk"
-    :okText="okText"
-    :ok-loading="submitting"
-    @cancel="handleCancel"
-  >
+  <a-modal v-model:visible="visible">
     <template #title> AI 智能生成 </template>
     <div>
       <a-form :model="form" style="width: 500px; margin: 32px auto 0">
@@ -30,6 +24,17 @@
         </a-form-item>
       </a-form>
     </div>
+    <template #footer>
+      <div>
+        <a-space>
+          <a-button @click="handleCancel">取消</a-button>
+          <a-button type="primary" @click="submitSSE">实时生成</a-button>
+          <a-button type="primary" @click="handleOk" :loading="submitting">
+            {{ okText }}
+          </a-button>
+        </a-space>
+      </div>
+    </template>
   </a-modal>
 </template>
 
@@ -52,7 +57,10 @@ const form = ref({
  */
 interface Props {
   appId: number;
-  onSuccess: (result: API.QuestionContentDTO[]) => void;
+  onSuccess?: (result: API.QuestionContentDTO[]) => void;
+  onSSESuccess?: (result: API.QuestionContentDTO) => void;
+  onStart?: (result: boolean) => void;
+  onEnd?: (result: boolean) => void;
 }
 const props = withDefaults(defineProps<Props>(), {
   appId: () => -1,
@@ -93,6 +101,31 @@ const handleOk = async () => {
   okText.value = "一键生成";
 };
 const handleCancel = () => {
+  visible.value = false;
+};
+
+const submitSSE = async () => {
+  // 创建 SSE 请求
+  const eventSource = new EventSource(
+    "http://localhost:8101/api/question/ai/generate/sse" +
+      `?appId=${props.appId}&optionNumber=${form.value.optionNumber}&questionNumber=${form.value.questionNumber}`
+  );
+  // 接收消息
+  props.onStart(true);
+  eventSource.onmessage = function (event) {
+    // 将消息传递给父组件
+    props.onSSESuccess(JSON.parse(event.data));
+  };
+  // 生成结束，关闭连接
+  eventSource.onerror = function () {
+    eventSource.close();
+    if (eventSource.readyState === EventSource.CLOSED) {
+      message.success("生成结束");
+    } else {
+      message.error("生成失败");
+    }
+    props.onEnd(true);
+  };
   visible.value = false;
 };
 </script>

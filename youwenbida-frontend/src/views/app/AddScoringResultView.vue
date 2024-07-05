@@ -74,6 +74,9 @@
           </div>
           <div v-else>/</div>
         </template>
+        <template #resultPicture="{ record }">
+          <a-image width="64" :src="record.resultPicture"></a-image>
+        </template>
         <template #optional="{ record }">
           <a-space>
             <a-button size="mini" type="primary" @click="doUpdate(record)"

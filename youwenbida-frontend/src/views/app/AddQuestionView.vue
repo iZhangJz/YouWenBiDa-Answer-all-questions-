@@ -1,112 +1,128 @@
 <template>
   <div id="AddQuestionView">
-    <div class="content">
-      <div>
-        <h2>题目编辑</h2>
-        <p>应用Id：{{ props.appId }}</p>
-      </div>
-      <a-form
-        label-align="left"
-        :model="questionContent"
-        :style="{ width: '600px' }"
-        @submit="handleSubmit"
-      >
-        <a-form-item
-          label="题目列表"
-          :content-flex="false"
-          :merge-props="false"
+    <a-spin :loading="SSELoading" tip="这个过程需要等待一段时间...">
+      <div class="content">
+        <div>
+          <h2>题目编辑</h2>
+          <p>应用Id：{{ props.appId }}</p>
+        </div>
+        <a-form
+          label-align="left"
+          :model="questionContent"
+          :style="{ width: '600px' }"
+          @submit="handleSubmit"
         >
-          <a-space>
-            <a-button @click="handleAddQuestion(questionContent.length)">
-              底部添加题目
-            </a-button>
-            <AIGenerateQuestionView
-              :appId="appId"
-              :onSuccess="generateQuesByAiSuccess"
-            />
-          </a-space>
-          <div
-            v-for="(question, questionIndex) in questionContent"
-            :key="questionIndex"
+          <a-form-item
+            label="题目列表"
+            :content-flex="false"
+            :merge-props="false"
           >
-            <a-space size="large">
-              <h3>题目 {{ questionIndex + 1 }}</h3>
-              <a-button
-                size="mini"
-                status="success"
-                @click="handleAddQuestion(questionIndex + 1)"
-              >
-                添加题目
-              </a-button>
-              <a-button
-                size="mini"
-                status="danger"
-                @click="handleDeleteQuestion(questionIndex)"
-              >
-                删除题目
-              </a-button>
-            </a-space>
-            <a-form-item :label="`题目 ${questionIndex + 1} 标题`">
-              <a-input v-model="question.title" placeholder="请输入题目标题" />
-            </a-form-item>
-            <!--题目选项-->
             <a-space>
-              <h4>题目 {{ questionIndex + 1 }} 选项列表</h4>
-              <a-button
-                @click="handleAddOption(question, question.options.length)"
-              >
-                底部添加选项
+              <a-button @click="handleAddQuestion(questionContent.length)">
+                底部添加题目
               </a-button>
+              <AIGenerateQuestionView
+                :appId="appId"
+                :onSuccess="generateQuesByAiSuccess"
+                :onSSESuccess="generateQuesBySSESuccess"
+                :onStart="onStartSSE"
+                :onEnd="onEndSSE"
+              />
             </a-space>
-            <a-form-item
-              v-for="(option, optionIndex) in question.options"
-              :key="optionIndex"
-              :label="`选项 ${optionIndex + 1}`"
-              :content-flex="false"
-              :merge-props="false"
+            <div
+              v-for="(question, questionIndex) in questionContent"
+              :key="questionIndex"
             >
-              <a-form-item label="选项 Key">
-                <a-input v-model="option.key" placeholder="请输入选项 Key" />
-              </a-form-item>
-              <a-form-item label="选项值">
-                <a-input v-model="option.value" placeholder="请输入选项值" />
-              </a-form-item>
-              <a-form-item label="选项结果">
-                <a-input v-model="option.result" placeholder="请输入选项结果" />
-              </a-form-item>
-              <a-form-item label="选项得分">
-                <a-input-number
-                  v-model="option.score"
-                  placeholder="请输入选项得分"
-                />
-              </a-form-item>
               <a-space size="large">
-                <h4>选项 {{ optionIndex + 1 }}</h4>
+                <h3>题目 {{ questionIndex + 1 }}</h3>
                 <a-button
                   size="mini"
                   status="success"
-                  @click="handleAddOption(question, optionIndex + 1)"
+                  @click="handleAddQuestion(questionIndex + 1)"
                 >
-                  添加选项
+                  添加题目
                 </a-button>
                 <a-button
                   size="mini"
                   status="danger"
-                  @click="handleDeleteOption(question, optionIndex)"
+                  @click="handleDeleteQuestion(questionIndex)"
                 >
-                  删除选项
+                  删除题目
                 </a-button>
               </a-space>
-            </a-form-item>
-          </div>
-        </a-form-item>
-      </a-form>
-      <div style="display: flex; justify-content: center; margin-top: 20px">
-        <a-button style="width: 100px" type="primary" html-type="submit">
-          提交
-        </a-button>
-      </div>
-    </div>
+              <a-form-item :label="`题目 ${questionIndex + 1} 标题`">
+                <a-input
+                  v-model="question.title"
+                  placeholder="请输入题目标题"
+                />
+              </a-form-item>
+              <!--题目选项-->
+              <a-space>
+                <h4>题目 {{ questionIndex + 1 }} 选项列表</h4>
+                <a-button
+                  @click="handleAddOption(question, question.options.length)"
+                >
+                  底部添加选项
+                </a-button>
+              </a-space>
+              <a-form-item
+                v-for="(option, optionIndex) in question.options"
+                :key="optionIndex"
+                :label="`选项 ${optionIndex + 1}`"
+                :content-flex="false"
+                :merge-props="false"
+              >
+                <a-form-item label="选项 Key">
+                  <a-input v-model="option.key" placeholder="请输入选项 Key" />
+                </a-form-item>
+                <a-form-item label="选项值">
+                  <a-input v-model="option.value" placeholder="请输入选项值" />
+                </a-form-item>
+                <a-form-item label="选项结果">
+                  <a-input
+                    v-model="option.result"
+                    placeholder="请输入选项结果"
+                  />
+                </a-form-item>
+                <a-form-item label="选项得分">
+                  <a-input-number
+                    v-model="option.score"
+                    placeholder="请输入选项得分"
+                  />
+                </a-form-item>
+                <a-space size="large">
+                  <h4>选项 {{ optionIndex + 1 }}</h4>
+                  <a-button
+                    size="mini"
+                    status="success"
+                    @click="handleAddOption(question, optionIndex + 1)"
+                  >
+                    添加选项
+                  </a-button>
+                  <a-button
+                    size="mini"
+                    status="danger"
+                    @click="handleDeleteOption(question, optionIndex)"
+                  >
+                    删除选项
+                  </a-button>
+                </a-space>
+              </a-form-item>
+            </div>
+          </a-form-item>
+        </a-form>
+        <div style="display: flex; justify-content: center; margin-top: 20px">
+          <a-button
+            :disabled="questionContent.length === 0"
+            style="width: 100px"
+            type="primary"
+            html-type="submit"
+          >
+            提交
+          </a-button>
+        </div>
+      </div></a-spin
+    >
   </div>
 </template>
 
@@ -129,6 +145,8 @@ const router = useRouter();
  * 存储题目内容
  */
 const questionContent = ref([] as API.QuestionContentDTO[]);
+
+const SSELoading = ref<boolean>(false);
 
 /**
  * 添加题目
@@ -247,6 +265,31 @@ const handleSubmit = async () => {
 const generateQuesByAiSuccess = (result: API.QuestionContentDTO[]) => {
   console.log(result);
   questionContent.value = [...questionContent.value, ...result];
+};
+
+const generateQuesBySSESuccess = (result: API.QuestionContentDTO) => {
+  questionContent.value = [...questionContent.value, result];
+};
+
+/**
+ * SSE 结束后修改 SSELoading
+ * @param result
+ */
+const onEndSSE = (result: boolean) => {
+  if (result === true) {
+    SSELoading.value = false;
+  }
+  console.log("SSELoading:" + SSELoading.value);
+};
+/**
+ * SSE 开始后修改 SSELoading
+ * @param result
+ */
+const onStartSSE = (result: boolean) => {
+  if (result === true) {
+    SSELoading.value = true;
+  }
+  console.log("SSELoading:" + SSELoading.value);
 };
 </script>
 
