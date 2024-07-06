@@ -94,6 +94,7 @@ public class UserAnswerController {
         UserAnswer userAnswerWithResult = scoringStrategyExecutor.doDispatch(userAnswerAddRequest.getChoices(), app);
         // 设置 id
         userAnswerWithResult.setId(newUserAnswerId);
+        userAnswerWithResult.setAppId(null);
         boolean success = userAnswerService.updateById(userAnswerWithResult);
         ThrowUtils.throwIf(!success, ErrorCode.OPERATION_ERROR,"系统错误");
 

@@ -16,7 +16,33 @@ spring:
     # 30 天过期
     timeout: 2592000
   # 数据库配置
-  # todo 需替换配置
+  shardingsphere:
+    datasource:
+      names: youwenbida
+      youwenbida:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/youwenbida?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+        username: root
+        password: 749828
+    rules:
+      # 分片算法配置
+        sharding:
+          sharding-algorithms:
+            # 自定义分片规则名
+            answer-table-inline:
+                type: inline
+                props:
+                  algorithm-expression: user_answer_$->{appId % 2}
+
+          tables:
+             user_answer:
+               actual-data-nodes: youwenbida.user_answer_$->{0..1}
+               table-strategy:
+                 standard:
+                   sharding-column: appId
+                   sharding-algorithm-name: answer-table-inline
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/youwenbida
