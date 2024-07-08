@@ -23,7 +23,8 @@
               <a-button type="primary" :href="`/answer/do/${appData.id}`">
                 开始答题
               </a-button>
-              <a-button>分享应用</a-button>
+              <a-button @click="doShare">分享应用</a-button>
+              <ShareModal ref="shareModalRef" :link="shareLink"></ShareModal>
               <a-button v-if="isMine" :href="`/add/question/${appData.id}`">
                 修改题目
               </a-button>
@@ -54,6 +55,7 @@ import { getAppVoByIdUsingGet } from "@/api/appController";
 import API from "@/api";
 import { APP_TYPE_MAP, SCORING_STRATEGY_MAP } from "@/enum/CommonEnum";
 import { useLoginUserStore } from "@/store/UserStore";
+import ShareModal from "@/components/ShareModal.vue";
 
 const appData = ref<API.AppVO>({});
 
@@ -66,6 +68,23 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   id: () => -1,
 });
+
+/**
+ * 分享弹窗引用
+ */
+const shareModalRef = ref();
+
+/**
+ * 分享链接
+ */
+const shareLink = `${window.location.protocol}//${window.location.host}/app/detail/${props.id}`;
+
+const doShare = (event: Event) => {
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal();
+  }
+  event.stopPropagation();
+};
 
 /**
  * 数据加载
