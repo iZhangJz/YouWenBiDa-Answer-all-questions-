@@ -1,5 +1,5 @@
 <template>
-  <div>403</div>
+  <div>No Auth</div>
 </template>
 
 <script setup lang="ts"></script>

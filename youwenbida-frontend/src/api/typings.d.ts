@@ -30,6 +30,16 @@ declare namespace API {
     scoringStrategy?: number;
   };
 
+  type AppAnswerCountDTO = {
+    appId?: number;
+    count?: number;
+  };
+
+  type AppAnswerResultCountDTO = {
+    count?: string;
+    resultName?: string;
+  };
+
   type AppEditRequest = {
     appDesc?: string;
     appIcon?: string;
@@ -105,6 +115,18 @@ declare namespace API {
   type BaseResponseInt_ = {
     code?: number;
     data?: number;
+    message?: string;
+  };
+
+  type BaseResponseListAppAnswerCountDTO_ = {
+    code?: number;
+    data?: AppAnswerCountDTO[];
+    message?: string;
+  };
+
+  type BaseResponseListAppAnswerResultCountDTO_ = {
+    code?: number;
+    data?: AppAnswerResultCountDTO[];
     message?: string;
   };
 
@@ -242,6 +264,17 @@ declare namespace API {
 
   type DeleteRequest = {
     id?: number;
+  };
+
+  type generateQuestionByAIWithSSEUsingGETParams = {
+    appId?: number;
+    optionNumber?: number;
+    questionNumber?: number;
+  };
+
+  type getAppAnswerResultCountUsingGETParams = {
+    /** appId */
+    appId?: number;
   };
 
   type getAppVOByIdUsingGETParams = {
@@ -677,6 +710,10 @@ declare namespace API {
     userId?: number;
   };
 
+  type SseEmitter = {
+    timeout?: number;
+  };
+
   type uploadFileUsingPOSTParams = {
     biz?: string;
   };
@@ -725,6 +762,7 @@ declare namespace API {
     appType?: number;
     choices?: string[];
     createTime?: string;
+    id?: number;
     resultDesc?: string;
     resultName?: string;
     resultPicture?: string;

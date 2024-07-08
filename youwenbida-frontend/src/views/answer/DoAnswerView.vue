@@ -63,7 +63,10 @@ import message from "@arco-design/web-vue/es/message";
 import { getAppVoByIdUsingGet } from "@/api/appController";
 import API from "@/api";
 import { listQuestionVoByPageUsingPost } from "@/api/questionController";
-import { addUserAnswerUsingPost } from "@/api/userAnswerController";
+import {
+  addUserAnswerUsingPost,
+  getUserAnswerIdUsingGet,
+} from "@/api/userAnswerController";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -73,6 +76,14 @@ const router = useRouter();
  */
 const appData = ref<API.AppVO>({});
 const loading = ref(false);
+/**
+ * 唯一id
+ */
+const id = ref<number>();
+
+const currentAnswer = ref<string>();
+const answerList = reactive<string[]>([]);
+
 /**
  * 接收题目数据
  */
@@ -89,8 +100,7 @@ const questionOptions = computed(() => {
       })
     : [];
 });
-const currentAnswer = ref<string>();
-const answerList = reactive<string[]>([]);
+
 /**
  * 应用Id参数
  */
@@ -99,6 +109,23 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   appId: () => -1,
+});
+
+/**
+ * 获取唯一 id
+ */
+const getId = async () => {
+  const res = await getUserAnswerIdUsingGet();
+  const data = res.data;
+  if (data.code === 0) {
+    id.value = data?.data;
+  } else {
+    message.error("获取唯一Id失败," + res.data.message);
+  }
+};
+
+watchEffect(() => {
+  getId();
 });
 
 /**
@@ -135,6 +162,7 @@ const loadData = async () => {
 const doSubmit = async () => {
   loading.value = true;
   const res = await addUserAnswerUsingPost({
+    id: id.value,
     appId: props.appId,
     choices: answerList,
   });

@@ -16,6 +16,7 @@ import AddAppView from "@/views/app/AddAppView.vue";
 import DoAnswerView from "@/views/answer/DoAnswerView.vue";
 import AnswerResultView from "@/views/answer/AnswerResultView.vue";
 import MyAnswerView from "@/views/answer/MyAnswerView.vue";
+import AdminAppStatisticView from "@/views/admin/AdminAppStatisticView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -37,7 +38,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "用户管理",
     component: AdminUserView,
     meta: {
-      access: ACCESS_ROLE_ENUM.ADMIN,
+      access: [ACCESS_ROLE_ENUM.ADMIN],
     },
   },
   {
@@ -45,7 +46,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "应用管理",
     component: AdminAppView,
     meta: {
-      access: ACCESS_ROLE_ENUM.ADMIN,
+      access: [ACCESS_ROLE_ENUM.ADMIN],
     },
   },
   {
@@ -53,7 +54,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "题目管理",
     component: AdminQuestionView,
     meta: {
-      access: ACCESS_ROLE_ENUM.ADMIN,
+      access: [ACCESS_ROLE_ENUM.ADMIN],
     },
   },
   {
@@ -61,7 +62,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "评分结果管理",
     component: AdminScoringResultView,
     meta: {
-      access: ACCESS_ROLE_ENUM.ADMIN,
+      access: [ACCESS_ROLE_ENUM.ADMIN],
     },
   },
   {
@@ -69,7 +70,15 @@ export const routes: Array<RouteRecordRaw> = [
     name: "回答管理",
     component: AdminAnswerView,
     meta: {
-      access: ACCESS_ROLE_ENUM.ADMIN,
+      access: [ACCESS_ROLE_ENUM.ADMIN],
+    },
+  },
+  {
+    path: "/admin/app/statistic",
+    name: "应用统计",
+    component: AdminAppStatisticView,
+    meta: {
+      access: [ACCESS_ROLE_ENUM.ADMIN],
     },
   },
   {
@@ -140,7 +149,11 @@ export const routes: Array<RouteRecordRaw> = [
     props: true,
     meta: {
       hideInMenu: true,
-      access: [ACCESS_ROLE_ENUM.USER, ACCESS_ROLE_ENUM.ADMIN],
+      access: [
+        ACCESS_ROLE_ENUM.USER,
+        ACCESS_ROLE_ENUM.VIP,
+        ACCESS_ROLE_ENUM.ADMIN,
+      ],
     },
   },
   {
@@ -150,7 +163,11 @@ export const routes: Array<RouteRecordRaw> = [
     props: true,
     meta: {
       hideInMenu: true,
-      access: [ACCESS_ROLE_ENUM.USER, ACCESS_ROLE_ENUM.ADMIN],
+      access: [
+        ACCESS_ROLE_ENUM.USER,
+        ACCESS_ROLE_ENUM.VIP,
+        ACCESS_ROLE_ENUM.ADMIN,
+      ],
     },
   },
   {
@@ -159,7 +176,11 @@ export const routes: Array<RouteRecordRaw> = [
     component: MyAnswerView,
     props: true,
     meta: {
-      access: [ACCESS_ROLE_ENUM.USER, ACCESS_ROLE_ENUM.ADMIN],
+      access: [
+        ACCESS_ROLE_ENUM.USER,
+        ACCESS_ROLE_ENUM.VIP,
+        ACCESS_ROLE_ENUM.ADMIN,
+      ],
     },
   },
 ];
