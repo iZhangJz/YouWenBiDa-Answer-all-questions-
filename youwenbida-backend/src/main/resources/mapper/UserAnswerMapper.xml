@@ -28,4 +28,19 @@
         resultScore,userId,createTime,
         updateTime,isDelete
     </sql>
+
+    <select id="doAppAnswerCount" resultType="com.zjz.youwenbida.model.dto.statistic.AppAnswerCountDTO">
+        select appId, count(userId) as count
+        from user_answer
+        group by appId
+        order by count desc limit 12;
+    </select>
+
+    <select id="doAppAnswerResultCount" resultType="com.zjz.youwenbida.model.dto.statistic.AppAnswerResultCountDTO">
+    select resultName,count(id) as count
+    from user_answer
+    where appId = #{appId}
+    group by  resultName
+    order by  count desc
+    </select>
 </mapper>

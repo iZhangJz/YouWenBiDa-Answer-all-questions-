@@ -1,5 +1,6 @@
 package com.zjz.youwenbida.controller;
 
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zjz.youwenbida.annotation.AuthCheck;
@@ -25,6 +26,7 @@ import com.zjz.youwenbida.service.UserAnswerService;
 import com.zjz.youwenbida.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -84,9 +86,12 @@ public class UserAnswerController {
         userAnswer.setUserId(loginUser.getId());
         userAnswer.setAppType(app.getAppType());
         userAnswer.setScoringStrategy(app.getScoringStrategy());
-        // 写入数据库
-        boolean result = userAnswerService.save(userAnswer);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR,"系统错误");
+        try{
+            boolean result = userAnswerService.save(userAnswer);
+            ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR,"系统错误");
+        }catch (DuplicateKeyException e){
+            log.warn("用户答题表添加失败,不能反复添加：{}", e.getMessage());
+        }
         // 返回新写入的数据 id
         long newUserAnswerId = userAnswer.getId();
 
@@ -271,4 +276,13 @@ public class UserAnswerController {
     }
 
     // endregion
+
+    /**
+     * 生成用户答案 Id
+     * @return id
+     */
+    @GetMapping
+    public BaseResponse<Long> getUserAnswerId(){
+        return ResultUtils.success(IdUtil.getSnowflakeNextId());
+    }
 }

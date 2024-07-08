@@ -52,11 +52,14 @@ public class UserAnswerServiceImpl extends ServiceImpl<UserAnswerMapper, UserAns
         String resultName = userAnswer.getResultName();
         String resultPicture = userAnswer.getResultPicture();
         Integer resultScore = userAnswer.getResultScore();
+        Long id = userAnswer.getId();
 
         // 创建数据时，参数不能为空
         if (add) {
             ThrowUtils.throwIf(ObjectUtils.isEmpty(appId),
                     ErrorCode.PARAMS_ERROR, "应用ID不能为空");
+            ThrowUtils.throwIf(ObjectUtils.isEmpty(id),
+                    ErrorCode.PARAMS_ERROR, "唯一ID不能为空");
         }
         if (ObjectUtils.isNotEmpty(resultId)) {
             ThrowUtils.throwIf(resultId < 0,

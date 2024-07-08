@@ -10,18 +10,21 @@ import com.zhipu.oapi.service.v4.model.ModelData;
 import com.zjz.youwenbida.common.ErrorCode;
 import com.zjz.youwenbida.constant.AIPromptConstant;
 import com.zjz.youwenbida.constant.CommonConstant;
+import com.zjz.youwenbida.constant.UserConstant;
 import com.zjz.youwenbida.exception.ThrowUtils;
 import com.zjz.youwenbida.manager.AIManager;
 import com.zjz.youwenbida.mapper.QuestionMapper;
 import com.zjz.youwenbida.model.dto.question.QuestionQueryRequest;
 import com.zjz.youwenbida.model.entity.Question;
 import com.zjz.youwenbida.model.entity.User;
+import com.zjz.youwenbida.model.enums.UserRoleEnum;
 import com.zjz.youwenbida.model.vo.QuestionVO;
 import com.zjz.youwenbida.model.vo.UserVO;
 import com.zjz.youwenbida.service.QuestionService;
 import com.zjz.youwenbida.service.UserService;
 import com.zjz.youwenbida.utils.SqlUtils;
 import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -49,6 +52,10 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
     @Resource
     private AIManager aiManager;
+
+    @Resource
+    private Scheduler vipScheduler;
+
     /**
      * 校验数据
      *
@@ -177,7 +184,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     }
 
     @Override
-    public SseEmitter generateAIQuestionSSE(String userPrompt) {
+    public SseEmitter generateAIQuestionSSE(String userPrompt, User loginUser) {
         // 3.建立 SSE 连接对象，0 表示永久不超时
         SseEmitter emitter = new SseEmitter(0L);
         // 4.调用 AI 生成问题,获取流式数据
@@ -189,8 +196,13 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         // 定义一个AtomicInteger类型的变量flag，用于记录消息中"{}"的数量
         AtomicInteger flag = new AtomicInteger(0);
         // 使用modelDataFlowable将消息分片，并获取每个分片的第一个choice的delta内容
+        Scheduler schedulers = Schedulers.io();
+        if (loginUser.getUserRole().equals(UserConstant.VIP_ROLE)){
+            // VIP 用户使用专属线程池
+            schedulers = vipScheduler;
+        }
         modelDataFlowable
-                .observeOn(Schedulers.io())
+                .observeOn(schedulers)
                 .map(chunk -> chunk.getChoices().get(0).getDelta().getContent())
                 // 将消息中的空格替换为空字符
                 .map(msg -> msg.replaceAll("\\s", ""))

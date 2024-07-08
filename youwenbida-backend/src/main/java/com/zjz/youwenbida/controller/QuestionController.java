@@ -273,10 +273,12 @@ public class QuestionController {
      * @return
      */
     @GetMapping("/ai/generate/sse")
-    public SseEmitter generateQuestionByAIWithSSE(AIGenerateQuestionRequest questionGenerateRequest) {
+    public SseEmitter generateQuestionByAIWithSSE(
+            AIGenerateQuestionRequest questionGenerateRequest,HttpServletRequest request) {
         String userPrompt = validateRequestAndGetAppPrompt(questionGenerateRequest);
+        User loginUser = userService.getLoginUser(request);
         // 2.生成用户 prompt
-        return questionService.generateAIQuestionSSE(userPrompt);
+        return questionService.generateAIQuestionSSE(userPrompt,loginUser);
     }
 
     /**

@@ -28,5 +28,10 @@ public interface UserConstant {
      */
     String BAN_ROLE = "ban";
 
+    /**
+     * VIP角色
+     */
+    String VIP_ROLE = "vip";
+
     // endregion
 }
